@@ -1,0 +1,164 @@
+<?php
+
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\Extension\Extension;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_help().
+ */
+function upgrade_rector_help($route_name, RouteMatchInterface $route_match) {
+  if ($route_name == 'upgrade_rector.run') {
+    return '<p>' . t('Run <a href=":rector">Drupal rector tools</a> on your projects to jumpstart Drupal 9 readiness with suggested patches. Complimentary to <a href=":upgrade-status">Upgrade Status</a> and does not replace running test suites on and manually testing with Drupal 9. It does give a head start with some of the deprecation removals automated.', [':rector' => 'https://drupal.org/project/rector', ':upgrade-status' => 'https://www.drupal.org/project/upgrade_status']) . '</p>';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function upgrade_rector_form_drupal_upgrade_status_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Weave in rector results with upgrade status results.
+  $projects = \Drupal::service('upgrade_rector.project_collector')->collectProjects();
+  $rector_results = \Drupal::service('keyvalue')->get('upgrade_status_rector_results');
+  $rector_processor = \Drupal::service('upgrade_rector.rector_processor');
+
+  $categories = ['custom', 'contrib'];
+  foreach($categories as $category) {
+    $states = ['installed', 'uninstalled'];
+    foreach ($states as $state) {
+      if (!isset($form[$category]['data'][$state]['#options'])) {
+        continue;
+      }
+      foreach ($form[$category]['data'][$state]['#options'] as $key => &$project) {
+        $raw_rector_result = $rector_results->get($key);
+        if (empty($raw_rector_result)) {
+          continue;
+        }
+
+        $processed_result = $rector_processor->processResults($raw_rector_result, $projects[$category][$key]);
+        if ($processed_result['state'] === 'success' && empty($processed_result['patch'])) {
+          $class = 'upgrade-status-ok-label';
+          $label = t('Nothing to patch');
+        }
+        elseif ($processed_result['state'] === 'fail') {
+          $class = 'upgrade-status-error-label';
+          $label = t('Patch error');
+        }
+        else {
+          $class = 'upgrade-status-ok-label';
+          $label = t('Patch available');
+        }
+        $url = Url::fromRoute('upgrade_rector.result', ['type' => $projects[$category][$key]->getType(), 'project_machine_name' => $key]);
+        $rector_info = [
+          'rector_info' => [
+            '#type' => 'link',
+            '#title' => $label,
+            '#url' => $url,
+            '#attributes' => [
+              'class' => ['use-ajax', $class],
+              'data-dialog-type' => 'modal',
+              'data-dialog-options' => Json::encode([
+                'width' => 1024,
+                'height' => 568,
+              ]),
+            ],
+          ]
+        ];
+
+        $status = $project['status']['data'];
+        if (!is_array($status)) {
+          $status = ['#type' => 'markup', '#markup' => $status];
+        }
+        $project['status']['data'] = [$status, $rector_info];
+      }
+    }
+  }
+
+  // Add checkbox to enable running rector.
+  $form['drupal_upgrade_status_form']['action']['run_rector'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Generate patches for scanned projects with rector.'),
+    '#default_value' => TRUE,
+  ];
+}
+
+/**
+ * Implements hook_upgrade_status_operations_alter().
+ */
+function upgrade_rector_upgrade_status_operations_alter(&$operations, FormStateInterface $form_state) {
+  // Duplicate each operation with another one that runs rector on the
+  // same extension.
+  if (!empty($form_state->getValue('run_rector'))) {
+    $keys = array_keys($operations);
+    foreach($keys as $key) {
+      $operations[] = [
+        'update_rector_run_rector_batch',
+        [$operations[$key][1][0]]
+      ];
+    }
+  }
+}
+
+/**
+ * Implements hook_upgrade_status_result_alter().
+ */
+function upgrade_rector_upgrade_status_result_alter(&$build, Extension $extension, $group_key) {
+  if ($group_key == 'rector') {
+    $rector_results = \Drupal::service('keyvalue')->get('upgrade_status_rector_results');
+    $rector_processor = \Drupal::service('upgrade_rector.rector_processor');
+    $raw_rector_result = $rector_results->get($extension->getName());
+    if (empty($raw_rector_result)) {
+      // Patch generation did not run yet, don't change anything here.
+      return;
+    }
+    else {
+      $processed_result = $rector_processor->processResults($raw_rector_result, $extension);
+      if ($processed_result['state'] === 'success' && empty($processed_result['patch'])) {
+        $class = 'upgrade-status-ok-label';
+        $label = t('Nothing to patch');
+      }
+      elseif ($processed_result['state'] === 'fail') {
+        $class = 'upgrade-status-error-label';
+        $label = t('Patch error');
+      }
+      else {
+        $class = 'upgrade-status-ok-label';
+        $label = t('Patch available');
+      }
+    }
+    $url = Url::fromRoute('upgrade_rector.result', ['type' => $extension->getType(), 'project_machine_name' => $extension->getName()]);
+    $rector_info = [
+      'rector_info' => [
+        '#type' => 'link',
+        '#prefix' => '<div class="upgrade-status-space">',
+        '#suffix' => '</div>',
+        '#title' => $label,
+        '#url' => $url,
+        '#attributes' => [
+          'class' => ['use-ajax', $class],
+          'data-dialog-type' => 'modal',
+          'data-dialog-options' => Json::encode([
+            'width' => 1024,
+            'height' => 568,
+          ]),
+        ],
+      ]
+    ];
+    $build['description'] = $rector_info;
+  }
+}
+
+/**
+ * Batch callback to run rector on a project.
+ *
+ * @param \Drupal\Core\Extension\Extension $extension
+ *   The extension to analyze.
+ * @param array $context
+ *   Batch context.
+ */
+function update_rector_run_rector_batch(Extension $extension, &$context) {
+  \Drupal::service('upgrade_rector.rector_processor')->runRector($extension);
+  $context['message'] = t('Rector complete for @project.', ['@project' => $extension->getName()]);
+}

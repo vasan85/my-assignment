@@ -1,0 +1,5 @@
+upgrade_rector.run:
+  title: 'Upgrade rector'
+  description: 'Generate patches for Drupal 9 compatibility with rector.'
+  route_name: upgrade_rector.run
+  parent: system.admin_reports

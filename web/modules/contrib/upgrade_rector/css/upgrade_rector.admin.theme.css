@@ -1,0 +1,18 @@
+/**
+ * @file
+ * Styles used by the Upgrade Rector module.
+ */
+
+ .upgrade-rector-summary > summary {
+   background-color: #f5f5f2;
+   margin: 0 0 1em 0;
+   border-bottom: 1px solid #ccc;
+ }
+
+ .drupal-upgrade-rector-form .button {
+   margin-left: 0;
+ }
+ [dir="rtl"] .drupal-upgrade-rector-form .button {
+   margin-left: inherit;
+   margin-right: 0;
+ }

@@ -1,0 +1,10 @@
+services:
+  upgrade_rector.project_collector:
+    class: Drupal\upgrade_rector\ProjectCollector
+    arguments: ['@extension.list.module', '@extension.list.theme', '@extension.list.profile']
+  logger.channel.upgrade_rector:
+    parent: logger.channel_base
+    arguments: ['upgrade_rector']
+  upgrade_rector.rector_processor:
+    class: Drupal\upgrade_rector\RectorProcessor
+    arguments: ['@keyvalue', '@logger.channel.upgrade_rector', '@file_system']

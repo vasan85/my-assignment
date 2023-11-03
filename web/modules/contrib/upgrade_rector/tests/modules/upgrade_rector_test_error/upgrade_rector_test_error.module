@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Sample code to test ourselves for now.
+ */
+function upgrade_rector_test_sample() {
+  // This is intended to demonstrate outdated code that will be rectored.
+  $foo = LOCALE_PLURAL_DELIMITER;
+  drupal_set_message('Sample message');
+  $url = Drupal::url('<front');
+}

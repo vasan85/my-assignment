@@ -1,0 +1,11 @@
+type: module
+name: 'Upgrade Rector'
+description: 'Get automated code fix suggestions for deprecations.'
+package: Administration
+core_version_requirement: ^9 || ^10
+configure: upgrade_rector.run
+
+# Information added by Drupal.org packaging script on 2023-09-29
+version: '2.0.0-alpha1'
+project: 'upgrade_rector'
+datestamp: 1696019653

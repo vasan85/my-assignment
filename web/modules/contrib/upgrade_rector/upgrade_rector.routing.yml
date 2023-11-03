@@ -1,0 +1,23 @@
+upgrade_rector.run:
+  path: '/admin/reports/upgrade-rector'
+  defaults:
+    _form: '\Drupal\upgrade_rector\Form\UpgradeRectorForm'
+    _title: 'Upgrade rector'
+  requirements:
+    _permission: 'administer software updates'
+
+upgrade_rector.result:
+  path: '/admin/reports/upgrade-rector/result/{type}/{project_machine_name}'
+  defaults:
+    _controller: '\Drupal\upgrade_rector\Controller\RectorResultController::resultPage'
+    _title: 'Upgrade rector'
+  requirements:
+    _permission: 'administer software updates'
+
+upgrade_rector.export:
+  path: '/admin/reports/upgrade-rector/export/{type}/{project_machine_name}'
+  defaults:
+    _controller: '\Drupal\upgrade_rector\Controller\RectorResultController::resultExport'
+    _title: 'Upgrade rector'
+  requirements:
+    _permission: 'administer software updates'

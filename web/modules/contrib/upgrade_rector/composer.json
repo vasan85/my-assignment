@@ -1,0 +1,11 @@
+{
+    "name": "drupal/upgrade_rector",
+    "type": "drupal-module",
+    "description": "Get automated code fix suggestions for deprecations.",
+    "homepage": "http://drupal.org/project/upgrade_rector",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "palantirnet/drupal-rector": "~0.11"
+    },
+    "minimum-stability": "dev"
+}

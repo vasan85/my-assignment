@@ -1,0 +1,5 @@
+upgrade_rector.admin:
+  version: VERSION
+  css:
+    theme:
+      css/upgrade_rector.admin.theme.css: {}
