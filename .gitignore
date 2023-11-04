@@ -1,4 +1,5 @@
 /vendor
+/web/modules/contrib
 .lando.yml
 rector.php
 
