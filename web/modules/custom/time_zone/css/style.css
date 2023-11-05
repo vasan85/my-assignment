@@ -1,7 +1,8 @@
-/* custom-module.css */
+/* style.css */
 
 .time-zone {
   line-height: 1.0rem;
+  text-align: left;
 }
 
 .time-zone strong {
