@@ -3,3 +3,6 @@ type: module
 description: 'A custom module for managing timezones.'
 package: Custom
 core_version_requirement: ^9 || ^10
+dependencies:
+  - drupal:config
+  - drupal:block

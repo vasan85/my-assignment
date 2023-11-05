@@ -1,0 +1,4 @@
+services:
+  time_zone.datetime_service:
+    class: Drupal\time_zone\TimezoneDateTimeService
+    arguments: ['@config.factory', '@date.formatter', '@datetime.time']

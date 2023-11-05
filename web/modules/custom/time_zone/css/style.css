@@ -1,0 +1,14 @@
+/* custom-module.css */
+
+.time-zone {
+  line-height: 1.0rem;
+}
+
+.time-zone strong {
+  font-size: 40px;
+  font-weight: bold;
+}
+.time-zone p {
+  font-size: 15px;
+  font-weight: bold;
+}
