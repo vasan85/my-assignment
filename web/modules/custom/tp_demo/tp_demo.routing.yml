@@ -1,0 +1,7 @@
+tp_demo.tp_demo_form:
+  path: '/admin/config/tp_demo'
+  defaults:
+    _form: '\Drupal\tp_demo\Form\TpDemoForm'
+    _title: 'TpDemoForm'
+  requirements:
+    _permission: 'administer site configuration'

@@ -1,0 +1,6 @@
+tp_demo.tp_demo_form:
+  title: 'TP Settings'
+  description: 'Manage TP settings'
+  parent: system.admin_config_system
+  route_name: tp_demo.tp_demo_form
+  weight: 20
