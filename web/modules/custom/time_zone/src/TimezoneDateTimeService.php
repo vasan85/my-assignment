@@ -62,11 +62,15 @@ class TimezoneDateTimeService {
     // Format the date and time separately.
     $formattedDate = $this->dateFormatter->format($currentTimestamp, 'custom', 'l, jS F Y', $selectedTimezone);
     $formattedTime = $this->dateFormatter->format($currentTimestamp, 'custom', 'g:i A', $selectedTimezone);
+    $formattedHour = $this->dateFormatter->format($currentTimestamp, 'custom', 'g', $selectedTimezone);
+    $formattedMinute = $this->dateFormatter->format($currentTimestamp, 'custom', 'i', $selectedTimezone);
 
     // Create an array to return both date and time.
     $formattedDateTime = [
       'date' => $formattedDate,
       'time' => $formattedTime,
+      'hour' => $formattedHour,
+      'minute' => $formattedMinute,
     ];
 
     return $formattedDateTime;

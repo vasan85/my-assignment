@@ -14,11 +14,9 @@ function time_zone_theme() {
       'country' => NULL,
       'city' => NULL,
       'date' => NULL,
-      'time' => NULL,
     ],
     'template' => 'block--timezoneblock',
   ];
-
   return $theme;
 }
 
@@ -28,4 +26,5 @@ function time_zone_theme() {
 function time_zone_preprocess_block(&$variables) {
   // Attach custom CSS library to the block template.
   $variables['#attached']['library'][] = 'time_zone/time_zone_style';
+  $variables['#attached']['library'][] = 'time_zone/time-zone-update';
 }

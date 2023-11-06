@@ -5,3 +5,13 @@ time_zone.settings:
     _title: 'Timezone Settings'
   requirements:
     _permission: 'administer site configuration'
+
+time_zone_ajax.time_zone_block_ajax:
+  path: '/time-zone-ajax'
+  defaults:
+    _controller: '\Drupal\time_zone\Controller\TimezoneBlockAjaxController::ajaxCallback'
+    _title: 'Timezone Block Ajax'
+  requirements:
+    _permission: 'access content'
+  options:
+    _format: json

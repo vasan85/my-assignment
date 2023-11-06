@@ -3,3 +3,9 @@ time_zone_style:
   css:
     theme:
       css/style.css: {}
+time-zone-update:
+  js:
+    js/time-zone-update.js: {weight: -1}
+  dependencies:
+    - core/drupal
+    - core/jquery
